@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redutor de Vídeo</title>
+</head>
+<body>
+  <h2>Redutor de Vídeo</h2>
+  <input type="file" id="video" accept="video/*" />
+  <button onclick="uploadVideo()">Comprimir e Baixar</button>
+  <p id="status"></p>
+
+  <script>
+    async function uploadVideo() {
+      const file = document.getElementById('video').files[0];
+      if (!file) return alert('Selecione um vídeo');
+
+      const formData = new FormData();
+      formData.append('video', file);
+
+      document.getElementById('status').innerText = 'Processando...';
+
+      const res = await fetch('/compress', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'video_comprimido.mp4';
+        a.click();
+        document.getElementById('status').innerText = 'Download pronto!';
+      } else {
+        document.getElementById('status').innerText = 'Erro no processamento.';
+      }
+    }
+  </script>
+</body>
+</html>
